@@ -1,0 +1,120 @@
+\documentclass{tufte-book}
+\usepackage{graphicx}  % werken met figuren
+\usepackage{gensymb} % werken met wetenschappelijke eenheden\usepackage{geometry}
+\usepackage{changepage} % http://ctan.org/pkg/changepage
+\usepackage[dutch,british]{babel} % instelling van de taal (woordsplitsing, spellingscontrole)
+\usepackage[parfill]{parskip} % Paragrafen gescheiden door witte lijn en geen inspringing
+\usepackage[font=small,skip=3pt]{caption} % Minder ruimte tussen figuur/table en ondertitel. Ondertitel klein
+\usepackage{capt-of}
+\usepackage{indentfirst}
+\setlength{\parindent}{0.7cm}
+\usepackage{enumitem} % Laat enumerate werken met letters
+\usepackage{url}
+\usepackage{lipsum}
+\setkeys{Gin}{width=\linewidth,totalheight=\textheight,keepaspectratio}
+% Prints a trailing space in a smart way.
+\usepackage{xspace}
+\usepackage{hyperref}
+\usepackage{amsmath}
+
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+
+% Alter some LaTeX defaults for better treatment of figures:
+% See p.105 of "TeX Unbound" for suggested values.
+% See pp. 199-200 of Lamport's "LaTeX" book for details.
+%   General parameters, for ALL pages:
+    \renewcommand{\topfraction}{0.9}	% max fraction of floats at top
+    \renewcommand{\bottomfraction}{0.9}	% max fraction of floats at bottom
+%   Parameters for TEXT pages (not float pages):
+    \setcounter{topnumber}{2}
+    \setcounter{bottomnumber}{2}
+    \setcounter{totalnumber}{4}     % 2 may work better
+    \renewcommand{\textfraction}{0.1}	% allow minimal text w. figs
+%   Parameters for FLOAT pages (not text pages):
+    \renewcommand{\floatpagefraction}{0.8}	% require fuller float pages
+% N.B.: floatpagefraction MUST be less than topfraction !!
+\setcounter{secnumdepth}{3}
+
+\newcommand{\tthdump}[1]{#1}
+
+\newcommand{\openepigraph}[2]{
+  \begin{fullwidth}
+  \sffamily\large
+    \begin{doublespace}
+      \noindent\allcaps{#1}\\ % epigraph
+      \noindent\allcaps{#2} % author
+    \end{doublespace}
+  \end{fullwidth}
+}
+
+
+\usepackage{makeidx}
+\makeindex
+
+\title{Will the Democrats\\
+gain control of Congress\\ 
+in the 2018 midterm\\
+elections?}
+\author{Jan Trommelmans}
+
+\begin{document}
+\SweaveOpts{concordance=TRUE,prefix.string=USYield}
+\setkeys{Gin}{width=1.1\marginparwidth} %% Sweave
+
+<<echo=FALSE>>=
+library(tidyverse)
+library(Quandl)
+@
+
+% Setting the ggplot theme:
+<<echo=FALSE>>=
+JT.theme <- theme(panel.border = element_rect(fill = NA, colour = "gray10"),
+                  panel.background = element_blank(),
+                  panel.grid.major = element_line(colour = "gray85"),
+                  panel.grid.minor = element_line(colour = "gray85"),
+                  panel.grid.major.x = element_line(colour = "gray85"),
+                  axis.text = element_text(size = 8 , face = "bold"),
+                  axis.title = element_text(size = 9 , face = "bold"),
+                  plot.title = element_text(size = 12 , face = "bold"),
+                  strip.text = element_text(size = 8 , face = "bold"),
+                  strip.background = element_rect(colour = "black"),
+                  legend.text = element_text(size = 8),
+                  legend.title = element_text(size = 9 , face = "bold"),
+                  legend.background = element_rect(fill = "white"),
+                  legend.key = element_rect(fill = "white"))
+@
+
+\mainmatter
+
+\chapter{Will the yield curve for 2-year and 10-year U.S. Treasuries invert before 2019?}
+
+\section{The data}
+
+<<label=start,fig=TRUE,include=FALSE, echo=FALSE>>=
+my.data <- Quandl("USTREASURY/YIELD", api_key="EHHxkiECz798n3EVcRCY")
+library(tidyverse)
+ggplot(data=my.data) + 
+  geom_line(aes(x=Date, y=`10 YR`-`2 YR`), color="red") +
+  labs(title="Yield difference", 
+       x="Date") +
+  JT.theme
+@
+
+\begin{marginfigure}[0cm]
+\includegraphics[width=1\textwidth]{USYield-start}
+\caption{}
+\label{fig:start}
+\setfloatalignment{b}% forces caption to be bottom-aligned
+\end{marginfigure}
+\medskip
+
+\newpage
+\textbf{Thanks} \\
+\medskip
+R Core Team (2018). R: A language and environment for statistical computing. R Foundation for Statistical Computing, Vienna, Austria. URL https://www.R-project.org/.
+\medskip
+<<>>=
+sessionInfo()
+@
+
+\end{document}
